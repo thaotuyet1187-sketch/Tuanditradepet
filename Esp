@@ -1,0 +1,44 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function AddESP(player)
+    -- Không ESP bản thân
+    if player == LocalPlayer then return end
+
+    local function Setup(character)
+        -- Tránh tạo nhiều Highlight trên một người
+        local oldHl = character:FindFirstChild("ESPHighlight")
+        if oldHl then oldHl:Destroy() end
+
+        -- Tạo Highlight mới
+        local hl = Instance.new("Highlight")
+        hl.Name = "ESPHighlight"
+        
+        -- Cấu hình màu sắc để chắc chắn nhìn thấy được
+        hl.FillColor = Color3.fromRGB(255, 0, 0) -- Màu thân: Đỏ
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255) -- Màu viền: Trắng
+        hl.FillTransparency = 0.5 -- Độ mờ của thân (0 là đậm, 1 là trong suốt)
+        hl.OutlineTransparency = 0 -- Độ mờ của viền
+        
+        -- Chế độ nhìn xuyên tường
+        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        hl.Adornee = character
+        hl.Parent = character
+    end
+
+    -- Bật ESP khi nhân vật load
+    if player.Character then
+        Setup(player.Character)
+    end
+
+    -- Bật ESP khi người chơi reset/respawn
+    player.CharacterAdded:Connect(Setup)
+end
+
+-- Bật ESP cho những người chơi đang có sẵn trong server
+for _, player in ipairs(Players:GetPlayers()) do
+    AddESP(player)
+end
+
+-- Bật ESP cho những người chơi mới tham gia sau đó
+Players.PlayerAdded:Connect(AddESP)
