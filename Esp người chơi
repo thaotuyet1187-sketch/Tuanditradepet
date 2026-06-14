@@ -1,0 +1,33 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local function AddESP(player)
+    if player == LocalPlayer then return end
+
+    local function Setup(character)
+        local oldHl = character:FindFirstChild("ESPHighlight")
+        if oldHl then oldHl:Destroy() end
+
+        local hl = Instance.new("Highlight")
+        hl.Name = "ESPHighlight"
+        hl.FillColor = Color3.fromRGB(255, 0, 0)
+        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+        hl.FillTransparency = 0.5
+        hl.OutlineTransparency = 0
+        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        hl.Adornee = character
+        hl.Parent = character
+    end
+
+    if player.Character then
+        Setup(player.Character)
+    end
+
+    player.CharacterAdded:Connect(Setup)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    AddESP(player)
+end
+
+Players.PlayerAdded:Connect(AddESP)
